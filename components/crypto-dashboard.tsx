@@ -42,7 +42,23 @@ export function CryptoDashboard() {
   const [isLoading, setIsLoading] = useState(true)
   const [selectedTimeframe, setSelectedTimeframe] = useState("24h")
   const [selectedCrypto, setSelectedCrypto] = useState("bitcoin")
-  const [watchlistIds, setWatchlistIds] = useState<string[]>(["bitcoin", "ethereum", "solana", "binancecoin", "cardano", "polkadot", "dogecoin", "avalanche", "chainlink"])
+  const [watchlistIds, setWatchlistIds] = useState<string[]>([
+    "1",     // Bitcoin
+    "1027",  // Ethereum
+    "1839",  // BNB
+    "5426",  // Solana
+    "2010",  // Cardano
+    "6636",  // Polkadot
+    "74",    // Dogecoin
+    "5805",  // Avalanche
+    "1975",  // Chainlink
+    "52",    // XRP
+    "3890",  // Polygon
+    "2",     // Litecoin
+    "1831",  // Bitcoin Cash
+    "328",   // Monero
+    "512",   // Stellar
+  ])
 
   useEffect(() => {
     const loadData = async () => {

@@ -15,152 +15,52 @@ interface CryptoData {
 }
 
 export async function fetchCryptoData(): Promise<CryptoData[]> {
-  // In a real application, you would fetch from an actual API
-  // Example: return fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false')
-  //   .then(response => response.json())
-
-  // For demo purposes, we'll return mock data
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve([
-        {
-          id: "bitcoin",
-          symbol: "btc",
-          name: "Bitcoin",
-          image: "/placeholder.svg?height=32&width=32",
-          current_price: 60123.45,
-          market_cap: 1167387834231,
-          market_cap_rank: 1,
-          total_volume: 28736495823,
-          price_change_percentage_24h: 2.34,
-          circulating_supply: 19456789,
-        },
-        {
-          id: "ethereum",
-          symbol: "eth",
-          name: "Ethereum",
-          image: "/placeholder.svg?height=32&width=32",
-          current_price: 3245.67,
-          market_cap: 389765432198,
-          market_cap_rank: 2,
-          total_volume: 15678943210,
-          price_change_percentage_24h: -1.23,
-          circulating_supply: 120345678,
-        },
-        {
-          id: "binancecoin",
-          symbol: "bnb",
-          name: "Binance Coin",
-          image: "/placeholder.svg?height=32&width=32",
-          current_price: 567.89,
-          market_cap: 87654321098,
-          market_cap_rank: 3,
-          total_volume: 2345678901,
-          price_change_percentage_24h: 0.45,
-          circulating_supply: 154321098,
-        },
-        {
-          id: "solana",
-          symbol: "sol",
-          name: "Solana",
-          image: "/placeholder.svg?height=32&width=32",
-          current_price: 123.45,
-          market_cap: 54321098765,
-          market_cap_rank: 4,
-          total_volume: 3456789012,
-          price_change_percentage_24h: 5.67,
-          circulating_supply: 440123456,
-        },
-        {
-          id: "cardano",
-          symbol: "ada",
-          name: "Cardano",
-          image: "/placeholder.svg?height=32&width=32",
-          current_price: 0.56,
-          market_cap: 19876543210,
-          market_cap_rank: 5,
-          total_volume: 987654321,
-          price_change_percentage_24h: -2.34,
-          circulating_supply: 35456789012,
-        },
-        {
-          id: "ripple",
-          symbol: "xrp",
-          name: "XRP",
-          image: "/placeholder.svg?height=32&width=32",
-          current_price: 0.78,
-          market_cap: 18765432109,
-          market_cap_rank: 6,
-          total_volume: 876543210,
-          price_change_percentage_24h: 1.23,
-          circulating_supply: 24012345678,
-        },
-        {
-          id: "polkadot",
-          symbol: "dot",
-          name: "Polkadot",
-          image: "/placeholder.svg?height=32&width=32",
-          current_price: 7.89,
-          market_cap: 9876543210,
-          market_cap_rank: 7,
-          total_volume: 765432109,
-          price_change_percentage_24h: -0.98,
-          circulating_supply: 1250123456,
-        },
-        {
-          id: "dogecoin",
-          symbol: "doge",
-          name: "Dogecoin",
-          image: "/placeholder.svg?height=32&width=32",
-          current_price: 0.12,
-          market_cap: 8765432109,
-          market_cap_rank: 8,
-          total_volume: 654321098,
-          price_change_percentage_24h: 3.45,
-          circulating_supply: 73012345678,
-        },
-        {
-          id: "avalanche",
-          symbol: "avax",
-          name: "Avalanche",
-          image: "/placeholder.svg?height=32&width=32",
-          current_price: 34.56,
-          market_cap: 7654321098,
-          market_cap_rank: 9,
-          total_volume: 543210987,
-          price_change_percentage_24h: -1.23,
-          circulating_supply: 220123456,
-        },
-        {
-          id: "chainlink",
-          symbol: "link",
-          name: "Chainlink",
-          image: "/placeholder.svg?height=32&width=32",
-          current_price: 18.90,
-          market_cap: 6543210987,
-          market_cap_rank: 10,
-          total_volume: 432109876,
-          price_change_percentage_24h: 2.34,
-          circulating_supply: 345678901,
-        },
-      ])
-    }, 1000) // Simulate network delay
-  })
+  try {
+    const response = await fetch('/api/crypto?limit=10')
+    if (!response.ok) {
+      throw new Error('Failed to fetch crypto data')
+    }
+    
+    const data = await response.json()
+    
+    return data.data.map((coin: any) => ({
+      id: coin.id.toString(),
+      name: coin.name,
+      symbol: coin.symbol,
+      current_price: coin.quote.USD.price,
+      price_change_percentage_24h: coin.quote.USD.percent_change_24h,
+      market_cap: coin.quote.USD.market_cap,
+      market_cap_rank: coin.cmc_rank,
+      total_volume: coin.quote.USD.volume_24h,
+      image: `https://s2.coinmarketcap.com/static/img/coins/64x64/${coin.id}.png`,
+      circulating_supply: coin.circulating_supply,
+    }))
+  } catch (error) {
+    console.error('Error fetching crypto data:', error)
+    throw error
+  }
 }
 
 export async function fetchCryptoHistory(cryptoId: string, timeframe: string) {
-  // In a real application, you would fetch historical data from an API
-  // Example: return fetch(`https://api.coingecko.com/api/v3/coins/${cryptoId}/market_chart?vs_currency=usd&days=${days}`)
-  //   .then(response => response.json())
-
-  // For demo purposes, we'll return mock data
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Generate mock price history data based on timeframe
-      const data = generateMockHistoryData(timeframe)
-      resolve(data)
-    }, 800) // Simulate network delay
-  })
+  try {
+    const days = timeframe === '24h' ? 1 : 
+                 timeframe === '7d' ? 7 : 
+                 timeframe === '30d' ? 30 : 365
+                 
+    const response = await fetch(
+      `/api/crypto/history?id=${cryptoId}&timeframe=${timeframe}&days=${days}`
+    )
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch crypto history')
+    }
+    
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.error('Error fetching crypto history:', error)
+    throw error
+  }
 }
 
 function generateMockHistoryData(timeframe: string) {
